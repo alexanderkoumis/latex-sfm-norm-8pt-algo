@@ -3,17 +3,13 @@
 \usepackage{cite} % cite{label}
 \usepackage{amsmath} % bmatrix
 \usepackage[pdftex]{graphicx}
+\usepackage{adjustbox}
 
 \usepackage{algorithm}% For algorithm table
 \usepackage{algpseudocode}% For algorithm table
-\usepackage{lipsum}% For algorithm table
 
 
-\title{Estimating 3D Structure from Motion from 2D SIFT features}
-\author{Alexander Koumis}
-\date{November 2014}
-
-
+\title{Estimating 3D Structure from Motion from 2D Feature Matches using the Normalized Eight Point Algorithm for Fundamental Matrix Computation}
 
 \begin{document}
 
@@ -36,41 +32,42 @@ Recently published work regarding 3D reconstruction ~\cite{Hartley2004} presents
 In this work, the \textit{Normalized eight-point algorithm} is examined as a means of extracting the Fundamental matrix, used to estimate 3D coordinates based on 2D parameters.
 
 \section{Background and Objectives}
-Modern photogrammetry-influenced SfM pipelines have several options for computing estimated 3D world points from a pair of 2D features, extracted from two images. Most SfM algorithms involve computation of \(F\), the Fundamental Matrix, introduced by Q. T. Luong~\cite{AICPub329:1992} as a parametrized way to describe the 3D relationship between a pair of feature matches. \(F\), as defined by Richard Hartley ~\cite{Hartley2004}, satisfies equation~\ref{eq:fundamental}, where \(x\) and \(x'\) are the column-extended 2D feature coordinates (eq. \ref{eq:points}) with all \(z\) values in \(x\) and \(x'\) set to 1).
+Modern photogrammetry-influenced SfM pipelines have several options for computing estimated 3D world points from a pair of 2D features, extracted from two images. Most SfM algorithms involve computation of $F$, the Fundamental Matrix, introduced by Q. T. Luong~\cite{AICPub329:1992} as a parametrized way to describe the 3D relationship between a pair of feature matches. $F$, as defined by Richard Hartley ~\cite{Hartley2004}, satisfies equation~\ref{eq:fundamental}, where $x$ and $x'$ are the column-extended 2D feature coordinates (eq. \ref{eq:points}) with all $z$ values in $x$ and $x'$ set to 1).
 
 \begin{center}
     \begin{equation}\label{eq:fundamental}
-        ${x}'^TFx = 0$
+        {x}'^TFx = 0
     \end{equation}
 \end{center}
 
 
-\begin{equation}\label{eq:points}
-    \begin{align}
-        $x = \begin{bmatrix}
-        x_1&y_1&z_1\\ 
-        x_2&y_2&z_2\\ 
+\begin{align}\label{eq:points}
+    x = 
+    \begin{bmatrix}
+        x_1 & y_1 & z_1\\ 
+        x_2 & y_2 & z_2\\ 
         \vdots&\vdots&\vdots\\ 
-        x_n&y_n&z_n 
-        \end{bmatrix}$
+        x_n&y_n&z_n\\
+    \end{bmatrix}
     &&
-        $x' = \begin{bmatrix}
-        x'_1&y'_1&z'_1\\ 
-        x'_2&y'_2&z'_2\\ 
-        \vdots&\vdots&\vdots\\ 
-        x'_n&y'_n&z'_n
-        \end{bmatrix}$
-    \end{align}
-\end{equation}
+    x` =
+    \begin{bmatrix}
+        x`_1 & y`_1 & z`_1\\ 
+        x`_2 & y`_2 & z`_2\\ 
+        \vdots & \vdots & \vdots\\ 
+        x`_n&y`_n&z`_n\\
+    \end{bmatrix}
+\end{align}
+
 
 \subsection{Eight point algorithm}
-The eight point algorithm, introduced by Longuet-Higgens in 1987 ~\cite{Longuet-Higgins:1987:CAR:33517.33523}, assumes the left hand side of equation~\eqref{eq:fundamental} as a singular value, equals to zero with 9 unknowns, which can therefore be solved with 8 linearly independent vectors. Rearranging equation~\eqref{eq:fundamental} by multiplying both sides by \({x}^-1\) allows the problem to be expressed as equation~\eqref{eq:Af}, where \(A\) is defined as the \(n x 9\) cross product of each match pair in \(x\) and \(x'\).
+The eight point algorithm, introduced by Longuet-Higgens in 1987 ~\cite{Longuet-Higgins:1987:CAR:33517.33523}, assumes the left hand side of equation~\eqref{eq:fundamental} as a singular value, equals to zero with 9 unknowns, which can therefore be solved with 8 linearly independent vectors. Rearranging equation~\eqref{eq:fundamental} by multiplying both sides by ${x}^-1$ allows the problem to be expressed as equation~\eqref{eq:Af}, where $A$ is defined as the $n x 9$ cross product of each match pair in $x$ and $x'$.
 
-As the measurements are typically noisy, the solution must be calculated as a least squares minimization, where \(||f||=1\), achievable by setting \(F_{33}\) to 1. With \(z_i\)  and \(z'_i\) also both equals to 1, \(A\) becomes a square 8x8 matrix (see equation~\eqref{eq:expanded8Pt}, accurate to scale (projective accuracy rather than Euclidean), allowing \(F\) to be solved using one of several linear solvers. LU decomposition with partial row pivoting is explored in this paper.
+As the measurements are typically noisy, the solution must be calculated as a least squares minimization, where $||f||=1$, achievable by setting $F_{33}$ to 1. With $z_i$  and $z'_i$ also both equals to 1, $A$ becomes a square 8x8 matrix (see equation~\eqref{eq:expanded8Pt}, accurate to scale (projective accuracy rather than Euclidean), allowing $F$ to be solved using one of several linear solvers. LU decomposition with partial row pivoting is explored in this paper.
 
 \begin{equation}\label{eq:Af}Af=0\end{equation}
 
-\begin{equation}\label{eq:fullFundamental}
+\begin{align}\label{eq:fullFundamental}
     \resizebox{0.5\textwidth}{!}{
         $\begin{bmatrix}
             x_1x_1' & y_1x_1' & z_1x_1' & x_1y_1' & y_1y_1' & z_1y_1' & x_1z_1' & y_1z_1' & z_1z_1'\\
@@ -80,11 +77,11 @@ As the measurements are typically noisy, the solution must be calculated as a le
         \begin{bmatrix}
             F_{11}\\F_{12}\\F_{13}\\F_{21}\\F_{22}\\F_{23}\\F_{31}\\F_{32}\\F_{33}
         \end{bmatrix}$
-        =0\\
+        =0
     }
-\end{equation}
+\end{align}
 
-\begin{equation}\label{eq:expanded8Pt}
+\begin{align}\label{eq:expanded8Pt}
     \resizebox{0.5\textwidth}{!}{
         $\begin{bmatrix}
             x_1x_1' & y_1x_1' & x_1' & x_1y_1' & y_1y_1' & y_1' & x_1 & y_1\\
@@ -94,45 +91,75 @@ As the measurements are typically noisy, the solution must be calculated as a le
             x_5x_5' & y_5x_5' & x_5' & x_5y_5' & y_5y_5' & y_5' & x_5 & y_5\\
             x_6x_6' & y_6x_6' & x_6' & x_6y_6' & y_6y_6' & y_6' & x_6 & y_6\\
             x_7x_7' & y_7x_7' & x_7' & x_7y_7' & y_7y_7' & y_7' & x_7 & y_7\\
-            x_8x_8' & y_8x_8' & x_8' & x_8y_8' & y_8y_8' & y_8' & x_8 & y_8\\
+            x_8x_8' & y_8x_8' & x_8' & x_8y_8' & y_8y_8' & y_8' & x_8 & y_8
         \end{bmatrix}
         \begin{bmatrix}
             F_{11}\\F_{12}\\F_{13}\\F_{21}\\F_{22}\\F_{23}\\F_{31}\\F_{32}
         \end{bmatrix}$
-        =0\\
+        =0
     }
-\end{equation}
+\end{align}
 
 \subsection{Normalized eight point algorithm}
 
-The traditional eight point algorithm has been criticized for producing inaccurate results, given the aforementioned presence of inevitably noisy measurements.  Hartley’s 1997 ~\cite{Hartley:1997:DEA:262631.262634} defense of the eight point algorithm states the algorithm is fundamentally sound in theory, and simply needs normalization of its input parameters to produce more robust results. The errors, he suggests, stem from the fact that the arbitrary \(1\) chosen for the third dimension of \(x\) and \(x'\) are not normalized with respects to the first and second dimensions.
-His solution comes in form of the \textit{Normalized eight point algorithm}, described in figure ~\ref{algorithm}. The algorithm first computes the centroid for each set of points~\eqref{eq:centroid}, as well as the average distance from each point to this centroid~\ref{eq:avgDistance}. The points are then scaled by the inverse of the average distance~\ref{eq:scale}, with outliers filtered out of the set. The points are and finally plugged into equation ~\ref{eq:expanded8Pt}. After \(F\) has been determined, it is de-normalized using ??, producing more stable values than would have been gathered sans normalization.
+The traditional eight point algorithm has been criticized for producing inaccurate results, given the aforementioned presence of inevitably noisy measurements.  Hartley’s 1997 ~\cite{Hartley:1997:DEA:262631.262634} defense of the eight point algorithm states the algorithm is fundamentally sound in theory, and simply needs normalization of its input parameters to produce more robust results. The errors, he suggests, stem from the fact that the arbitrary $1$ chosen for the third dimension of $x$ and $x'$ are not normalized with respects to the first and second dimensions.
+His solution comes in form of the \textit{Normalized eight point algorithm}, described in figure ~\ref{algorithm}. The algorithm first computes the centroid for both sets of points, or the normalized average of the values in each dimension:
 
-
-\begin{equation}\label{eq:centroid}
+\begin{align}\label{eq:centroid}
     c =\begin{bmatrix}
         \frac{\sum_{i}^{8}x_i}{8\sqrt{2}} & \frac{\sum_{i}^{8}y_i}{8\sqrt{2}} & \frac{\sum_{i}^{8}z_i}{8\sqrt{2}}
     \end{bmatrix}
+&&
     c' =\begin{bmatrix}
         \frac{\sum_{i}^{8}x'_i}{8\sqrt{2}} & \frac{\sum_{i}^{8}y'_i}{8\sqrt{2}} & \frac{\sum_{i}^{8}z'_i}{8\sqrt{2}}
     \end{bmatrix}
-\end{equation}
+\end{align}
 
+The average distance from each point sets' centroid is calculated, by finding the average magnitude of difference between each point's coordinate and the centroid:
 
-\begin{equation}\label{eq:avgDistance}
+\begin{align}\label{eq:avgDistance}
     dist = \frac{
         \sum_{i}^{8}
         \sqrt{x_i^{2}+y_i^{2}+z_i^{2}}
     }{8}
-\end{equation}
+&&
+    dist' = \frac{
+        \sum_{i}^{8}
+        \sqrt{x`_i^{2}+y`_i^{2}+z`_i^{2}}
+    }{8}
+\end{align}
 
-\begin{equation}\label{eq:scale}
+The points are then scaled by the inverse of the average distance~\ref{eq:scale}, with outliers filtered out of the set:
+
+\begin{align}\label{eq:scale}
     scale = \frac{1}{dist}
-\end{equation}
+&&
+    scale' = \frac{1}{dist'}
+\end{align}
+
+\begin{align}\label{eq:pointsScaled}
+    x = \begin{bmatrix}
+        \frac{x_1}{scale} & \frac{y_1}{scale} & \frac{z_1}{scale}\\[0.3em]
+        \frac{x_2}{scale} & \frac{y_2}{scale} & \frac{z_2}{scale}\\[0.3em]
+        \vdots & \vdots & \vdots\\ 
+        \frac{x_n}{scale} & \frac{y_n}{scale} & \frac{z_n}{scale}\\[0.3em]
+    \end{bmatrix}
+&&
+    x' =
+    \begin{bmatrix}
+        \frac{x'_1}{scale'} & \frac{y'_1}{scale'} & \frac{z'_1}{scale'}\\[0.3em] 
+        \frac{x'_2}{scale'} & \frac{y'_2}{scale'} & \frac{z'_2}{scale'}\\[0.3em]
+        \vdots & \vdots & \vdots\\ 
+        \frac{x'_n}{scale'} & \frac{y'_n}{scale'} & \frac{z'_n}{scale'}\\[0.3em]
+    \end{bmatrix}
+\end{align}
+\\
+The scaled points are then plugged into equation ~\eqref{eq:expanded8Pt}. After $F$ has been determined, it is de-normalized using ??, producing more stable values than would have been gathered sans normalization.
+
 
 
 \subsection{Triangulation}
-After \(F\) has been calculated, 3D world point estimated can be made computing \(P\) and \(P’\), the estimated projection matrices of each cameras, satisfying equations \eqref{eq:xPX_1} and \eqref{eq:xPX_2}. \(P\) is taken to be the canonical projection, with \(P’\) describing the rotation and translation of the second image projection relative to the first. \(\textbf{e'}\) is defined as the \textit{epipole} of the second image, or the position of the projection of the first camera's centroid on the second image (see figure \ref{fig:homography}), and is computed as the left nullspace of \(F\)~\eqref{eq:F_left_nullspace}.
+After $F$ has been calculated, 3D world point estimated can be made computing $P$ and $P’$, the estimated projection matrices of each cameras, satisfying equations \eqref{eq:xPX_1} and \eqref{eq:xPX_2}. $P$ is taken to be the canonical projection, with $P’$ describing the rotation and translation of the second image projection relative to the first. $\textbf{e'}$ is defined as the \textit{epipole} of the second image, or the position of the projection of the first camera's centroid on the second image (see figure \ref{fig:homography}), and is computed as the left nullspace of $F$~\eqref{eq:F_left_nullspace}.
 
 \begin{equation}\label{eq:xPX_1}\end{equation}
 \begin{equation}\label{eq:xPX_2}\end{equation}
@@ -141,7 +168,7 @@ After \(F\) has been calculated, 3D world point estimated can be made computing 
 \begin{equation}\label{eq:F_left_nullspace}\end{equation}
 
 
-The \textit{RANSAC} (Random sample consensus) scheme is used to determine an optimal set of 8 matches to finally use in equation \ref{eq:fullFundamental}. It's operation is outlined in figure \ref{algo:RANSACOutlierRemoval}. 8 matches from the image pair are repeatedly chosen with the \textit{normalized 8 point algorithm} used to compute $F$. For a predefined number of iterations, 8 random point matches are selected and used to fill up 
+The \textit{RANSAC} (Random sample consensus) scheme is used to determine an optimal set of 8 matches to finally use in equation \ref{eq:fullFundamental}. It's operation is outlined in figure \ref{algo:RANSAC}. 8 matches from the image pair are repeatedly chosen with the \textit{normalized 8 point algorithm} used to compute $F$. For a predefined number of iterations, 8 random point matches are selected and used to fill up 
 
 
 \begin{figure}
