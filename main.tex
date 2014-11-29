@@ -47,18 +47,18 @@ Modern photogrammetry-influenced SfM pipelines have several options for computin
 
 \begin{center}
 \begin{equation}
-x = \begin{bmatrix}
+x = $\begin{bmatrix}
 x_1&y_1&z_1\\ 
 x_2&y_2&z_2\\ 
 \vdots&\vdots&\vdots\\ 
 x_n&y_n&z_n 
-\end{bmatrix}
-x' = \begin{bmatrix}
+\end{bmatrix}$
+x' = $\begin{bmatrix}
 x'_1&y'_1&z'_1\\ 
 x'_2&y'_2&z'_2\\ 
 \vdots&\vdots&\vdots\\ 
 x'_n&y'_n&z'_n
-\end{bmatrix}
+\end{bmatrix}$
 \label{eq:points}
 \end{equation}
 \end{center}
@@ -72,14 +72,14 @@ As the measurements are typically noisy, the solution must be calculated as a le
 
 \begin{equation}\label{eq:fullFundamental}
     \resizebox{0.5\textwidth}{!}{
-        \begin{bmatrix}
+        $\begin{bmatrix}
             x_1x_1' & y_1x_1' & z_1x_1' & x_1y_1' & y_1y_1' & z_1y_1' & x_1z_1' & y_1z_1' & z_1z_1'\\
             \vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots\\
             x_nx_n' & y_nx_n' & z_nx_n' & x_ny_n' & y_ny_n' & z_ny_n' & x_nz_n' & y_nz_n' & z_nz_n'\\
         \end{bmatrix}
         \begin{bmatrix}
             F_{11}\\F_{12}\\F_{13}\\F_{21}\\F_{22}\\F_{23}\\F_{31}\\F_{32}\\F_{33}
-        \end{bmatrix}
+        \end{bmatrix}$
         =0\\
     }
 \end{equation}
@@ -95,10 +95,10 @@ As the measurements are typically noisy, the solution must be calculated as a le
             x_6x_6' & y_6x_6' & x_6' & x_6y_6' & y_6y_6' & y_6' & x_6 & y_6\\
             x_7x_7' & y_7x_7' & x_7' & x_7y_7' & y_7y_7' & y_7' & x_7 & y_7\\
             x_8x_8' & y_8x_8' & x_8' & x_8y_8' & y_8y_8' & y_8' & x_8 & y_8\\
-        \end{bmatrix}$
+        \end{bmatrix}
         \begin{bmatrix}
             F_{11}\\F_{12}\\F_{13}\\F_{21}\\F_{22}\\F_{23}\\F_{31}\\F_{32}
-        \end{bmatrix}
+        \end{bmatrix}$
         =0\\
     }
 \end{equation}
