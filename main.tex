@@ -39,29 +39,29 @@ In this work, the \textit{Normalized eight-point algorithm} is examined as a mea
 Modern photogrammetry-influenced SfM pipelines have several options for computing estimated 3D world points from a pair of 2D features, extracted from two images. Most SfM algorithms involve computation of \(F\), the Fundamental Matrix, introduced by Q. T. Luong~\cite{AICPub329:1992} as a parametrized way to describe the 3D relationship between a pair of feature matches. \(F\), as defined by Richard Hartley ~\cite{Hartley2004}, satisfies equation~\ref{eq:fundamental}, where \(x\) and \(x'\) are the column-extended 2D feature coordinates (eq. \ref{eq:points}) with all \(z\) values in \(x\) and \(x'\) set to 1).
 
 \begin{center}
-\begin{equation}
-{x}'^TFx = 0
-\label{eq:fundamental}
-\end{equation}
+    \begin{equation}\label{eq:fundamental}
+        ${x}'^TFx = 0$
+    \end{equation}
 \end{center}
 
-\begin{center}
-\begin{equation}
-x = $\begin{bmatrix}
-x_1&y_1&z_1\\ 
-x_2&y_2&z_2\\ 
-\vdots&\vdots&\vdots\\ 
-x_n&y_n&z_n 
-\end{bmatrix}$
-x' = $\begin{bmatrix}
-x'_1&y'_1&z'_1\\ 
-x'_2&y'_2&z'_2\\ 
-\vdots&\vdots&\vdots\\ 
-x'_n&y'_n&z'_n
-\end{bmatrix}$
-\label{eq:points}
+
+\begin{equation}\label{eq:points}
+    \begin{align}
+        $x = \begin{bmatrix}
+        x_1&y_1&z_1\\ 
+        x_2&y_2&z_2\\ 
+        \vdots&\vdots&\vdots\\ 
+        x_n&y_n&z_n 
+        \end{bmatrix}$
+    &&
+        $x' = \begin{bmatrix}
+        x'_1&y'_1&z'_1\\ 
+        x'_2&y'_2&z'_2\\ 
+        \vdots&\vdots&\vdots\\ 
+        x'_n&y'_n&z'_n
+        \end{bmatrix}$
+    \end{align}
 \end{equation}
-\end{center}
 
 \subsection{Eight point algorithm}
 The eight point algorithm, introduced by Longuet-Higgens in 1987 ~\cite{Longuet-Higgins:1987:CAR:33517.33523}, assumes the left hand side of equation~\eqref{eq:fundamental} as a singular value, equals to zero with 9 unknowns, which can therefore be solved with 8 linearly independent vectors. Rearranging equation~\eqref{eq:fundamental} by multiplying both sides by \({x}^-1\) allows the problem to be expressed as equation~\eqref{eq:Af}, where \(A\) is defined as the \(n x 9\) cross product of each match pair in \(x\) and \(x'\).
