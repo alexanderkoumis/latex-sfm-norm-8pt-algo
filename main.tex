@@ -9,17 +9,16 @@
 \usepackage{algpseudocode}% For algorithm table
 
 
-\title{Estimating 3D Structure from Motion from 2D Feature Matches using the Normalized Eight Point Algorithm for Fundamental Matrix Computation}
-
+\title{Estimating 3D Structure from Motion using\\
+the Normalized Eight Point Algorithm\\
+and LUP Decomposition\\}
 \begin{document}
 
 \author{
-\IEEEauthorblockN{Alexander Koumis - SID: 007033975\\}
-\IEEEauthorblockA{
-CmpE 130 Fall 2014\\
-Computer Engineering Department\\
+\IEEEauthorblockN{Alexander Koumis\\}
+\IEEEauthorblockA{Computer Engineering Department\\
 San Jose State University\\
-Email: me@alexander.computer}}
+me@alexander.computer}}
 
 \maketitle
 
@@ -32,7 +31,7 @@ Recently published work regarding 3D reconstruction ~\cite{Hartley2004} presents
 In this work, the \textit{Normalized eight-point algorithm} is examined as a means of extracting the Fundamental matrix, used to estimate 3D coordinates based on 2D parameters.
 
 \section{Background and Objectives}
-Modern photogrammetry-influenced SfM pipelines have several options for computing estimated 3D world points from a pair of 2D features, extracted from two images. Most SfM algorithms involve computation of $F$, the Fundamental Matrix, introduced by Q. T. Luong~\cite{AICPub329:1992} as a parametrized way to describe the 3D relationship between a pair of feature matches. $F$, as defined by Richard Hartley ~\cite{Hartley2004}, satisfies equation~\ref{eq:fundamental}, where $x$ and $x'$ are the column-extended 2D feature coordinates (eq. \ref{eq:points}) with all $z$ values in $x$ and $x'$ set to 1).
+Modern photogrammetry-influenced SfM pipelines have several options for computing estimated 3D world points from a pair of 2D features, extracted from two images. Most SfM algorithms involve computation of $F$, the Fundamental Matrix, introduced by Q. T. Luong~\cite{AICPub329:1992}, a parametrized way to describe the 3D relationship between a pair of feature matches, satisfying homogeneous equation~\eqref{eq:fundamental}~\cite{Hartley2004}. $x$ and $x'$ are determined by extracting keypoints and/or descriptors from two images, using any number of algorithms, such as SIFT~\cite{Bay:2008:SRF:1370312.1370556}, SURF~\cite{Bay:2008:SRF:1370312.1370556},  using sets extracted from 2D images, wthe column-extended 2D feature coordinates (equation \eqref{eq:points}) with all $z$ values in $x$ and $x'$ set to 1).
 
 \begin{center}
     \begin{equation}\label{eq:fundamental}
@@ -102,7 +101,7 @@ As the measurements are typically noisy, the solution must be calculated as a le
 
 \subsection{Normalized eight point algorithm}
 
-The traditional eight point algorithm has been criticized for producing inaccurate results, given the aforementioned presence of inevitably noisy measurements.  Hartley’s 1997 ~\cite{Hartley:1997:DEA:262631.262634} defense of the eight point algorithm states the algorithm is fundamentally sound in theory, and simply needs normalization of its input parameters to produce more robust results. The errors, he suggests, stem from the fact that the arbitrary $1$ chosen for the third dimension of $x$ and $x'$ are not normalized with respects to the first and second dimensions.
+The traditional eight point algorithm has been criticized for producing inaccurate results, given the aforementioned presence of inevitably noisy measurements.  Hartley’s 1997 ~\cite{Hartley:1997:DEA:262631.262634} defense of the eight point algorithm states the algorithm is fundamentally sound in theory, and simply needs normalization of its input parameters to produce more robust results. The errors, he suggests, stem from the fact that the arbitrary $1$ chosen for the third dimension of $x$ and $x`$ are not normalized with respects to the first and second dimensions.
 His solution comes in form of the \textit{Normalized eight point algorithm}, described in figure ~\ref{algorithm}. The algorithm first computes the centroid for both sets of points, or the normalized average of the values in each dimension:
 
 \begin{align}\label{eq:centroid}
@@ -129,7 +128,7 @@ The average distance from each point sets' centroid is calculated, by finding th
     }{8}
 \end{align}
 
-The points are then scaled by the inverse of the average distance~\ref{eq:scale}, with outliers filtered out of the set:
+The points are then scaled by the inverse of the average distance, which are then plugged into equation ~\eqref{eq:expanded8Pt}:
 
 \begin{align}\label{eq:scale}
     scale = \frac{1}{dist}
@@ -154,12 +153,15 @@ The points are then scaled by the inverse of the average distance~\ref{eq:scale}
     \end{bmatrix}
 \end{align}
 \\
-The scaled points are then plugged into equation ~\eqref{eq:expanded8Pt}. After $F$ has been determined, it is de-normalized using ??, producing more stable values than would have been gathered sans normalization.
+The scaled points are then plugged into equation ~\eqref{eq:expanded8Pt}
+
+
+$F$ is de-normalized using, producing more stable values than would have been gathered sans normalization.
 
 
 
 \subsection{Triangulation}
-After $F$ has been calculated, 3D world point estimated can be made computing $P$ and $P’$, the estimated projection matrices of each cameras, satisfying equations \eqref{eq:xPX_1} and \eqref{eq:xPX_2}. $P$ is taken to be the canonical projection, with $P’$ describing the rotation and translation of the second image projection relative to the first. $\textbf{e'}$ is defined as the \textit{epipole} of the second image, or the position of the projection of the first camera's centroid on the second image (see figure \ref{fig:homography}), and is computed as the left nullspace of $F$~\eqref{eq:F_left_nullspace}.
+After $F$ has been calculated, 3D world point estimated can be made computing $P$ and $P`$, the estimated projection matrices of each cameras, satisfying equations \eqref{eq:xPX_1} and \eqref{eq:xPX_2}. $P$ is taken to be the canonical projection, with $P`$ describing the rotation and translation of the second image projection relative to the first. \textbf{e`} is defined as the \textit{epipole} of the second image, or the position of the projection of the first camera's centroid on the second image (see figure \ref{fig:homography}), and is computed as the left nullspace of $F$~\eqref{eq:F_left_nullspace}.
 
 \begin{equation}\label{eq:xPX_1}\end{equation}
 \begin{equation}\label{eq:xPX_2}\end{equation}
